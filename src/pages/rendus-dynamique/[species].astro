@@ -1,0 +1,63 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+import PlotFigure from "../../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+
+export async function getStaticPaths() {
+  const species = [...new Set(penguins.map((p) => p.species))];
+  return species.map((speciesName) => ({
+    params: { species: speciesName },
+    props: {
+      speciesData: penguins.filter((p) => p.species === speciesName),
+      speciesName: speciesName,
+    },
+  }));
+}
+
+const { speciesData, speciesName } = Astro.props;
+const { species } = Astro.params;
+---
+
+<Layout>
+  <main class="max-w-5xl mx-auto py-10 px-6">
+    <section class="text-center mb-10">
+      <h1 class="text-3xl font-semibold text-orange-600 mb-2">
+        Espèce : {species}
+      </h1>
+      <p class="text-gray-600">
+        {speciesData.length} pingouins observés pour cette espèce.
+      </p>
+    </section>
+
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+      <PlotFigure
+        options={{
+          grid: true,
+          marks: [
+            Plot.dot(speciesData, {
+              x: "culmen_length_mm",
+              y: "culmen_depth_mm",
+              stroke: "species",
+              fill: "steelblue",
+              r: 5,
+              fillOpacity: 0.7,
+            }),
+          ],
+          x: { label: "Longueur du bec (mm)" },
+          y: { label: "Profondeur du bec (mm)" },
+          title: `Graphique des ${species}`,
+        }}
+      />
+    </div>
+
+    <div class="text-center mt-8">
+      <a
+        href="/rendus-dynamique"
+        class="inline-block px-5 py-2 text-sm font-medium text-orange-600 border border-orange-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors duration-200"
+      >
+        ← Retour à la liste
+      </a>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,150 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlotFigure from "../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+import penguins from "../assets/penguins.json";
+
+const species = [
+  { name: "Adelie", description: "Manchot Adélie" },
+  { name: "Gentoo", description: "Manchot Gentoo" },
+  { name: "Chinstrap", description: "Manchot Chinstrap" },
+];
+const speciesData = species.map((s) => ({
+  ...s,
+  data: penguins.filter((p) => p.species === s.name),
+  count: penguins.filter((p) => p.species === s.name).length,
+}));
+---
+
+<Layout>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6">Navigation entre les espèces</h1>
+    <div class="flex gap-2 mb-6 border-b-2 border-gray-200">
+      {
+        species.map((s, index) => (
+          <button
+            class={`tab-button px-6 py-3 font-semibold transition-colors ${index === 0 ? "active border-b-4 border-blue-500 text-blue-600" : "text-gray-600 hover:text-blue-500"}`}
+            data-species={s.name}
+          >
+            {s.name}
+          </button>
+        ))
+      }
+    </div>
+
+    <div
+      id="tab-content"
+      class="border-2 border-gray-300 rounded-lg p-6 min-h-[600px]"
+    >
+      {
+        speciesData.map((s, index) => (
+          <div
+            id={`content-${s.name}`}
+            class={`species-content ${index !== 0 ? "hidden" : ""}`}
+          >
+            <div class="mb-6">
+              <h2 class="text-2xl font-semibold mb-2 text-blue-600">
+                {s.name}
+              </h2>
+              <p class="mb-2 text-gray-700 text-lg">{s.description}</p>
+              <p class="text-gray-600">
+                <strong>{s.count}</strong> manchots observés pour cette espèce
+              </p>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-4">
+              <h3 class="text-lg font-medium mb-3">
+                Relation Longueur vs Profondeur du bec
+              </h3>
+              <PlotFigure
+                options={{
+                  grid: true,
+                  marks: [
+                    Plot.dot(s.data, {
+                      x: "culmen_length_mm",
+                      y: "culmen_depth_mm",
+                      fill:
+                        s.name === "Adelie"
+                          ? "#ff6b6b"
+                          : s.name === "Gentoo"
+                            ? "#4ecdc4"
+                            : "#45b7d1",
+                      r: 4,
+                      fillOpacity: 0.7,
+                      stroke: "#333",
+                      strokeWidth: 0.5,
+                    }),
+                  ],
+                  x: { label: "Longueur du bec (mm)" },
+                  y: { label: "Profondeur du bec (mm)" },
+                  width: 500,
+                  height: 300,
+                }}
+              />
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+              <h3 class="text-lg font-medium mb-3">
+                Distribution des masses corporelles
+              </h3>
+              <PlotFigure
+                options={{
+                  marks: [
+                    Plot.rectY(
+                      s.data,
+                      Plot.binX({ y: "count" }, { x: "body_mass_g" })
+                    ),
+                  ],
+                  x: { label: "Masse corporelle (g)" },
+                  y: { label: "Nombre d'individus" },
+                  width: 500,
+                  height: 250,
+                  color: {
+                    scheme:
+                      s.name === "Adelie"
+                        ? "reds"
+                        : s.name === "Gentoo"
+                          ? "blues"
+                          : "greens",
+                  },
+                }}
+              />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <script>
+      const tabButtons = document.querySelectorAll(".tab-button");
+
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const speciesName = button.getAttribute("data-species");
+          tabButtons.forEach((btn) => {
+            btn.classList.remove(
+              "active",
+              "border-b-4",
+              "border-blue-500",
+              "text-blue-600"
+            );
+            btn.classList.add("text-gray-600");
+          });
+          button.classList.add(
+            "active",
+            "border-b-4",
+            "border-blue-500",
+            "text-blue-600"
+          );
+          button.classList.remove("text-gray-600");
+          document.querySelectorAll(".species-content").forEach((content) => {
+            content.classList.add("hidden");
+          });
+          document
+            .querySelector(`#content-${speciesName}`)
+            ?.classList.remove("hidden");
+        });
+      });
+    </script>
+  </div>
+</Layout>

@@ -1,0 +1,75 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+
+const species = [...new Set(penguins.map((c) => c.species))].sort();
+
+const speciesWithCounts = species.map((s) => ({
+  name: s,
+  count: penguins.filter((p) => p.species === s).length,
+}));
+---
+
+<Layout>
+  <main class="max-w-4xl mx-auto py-12 px-6">
+    <section class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">
+        Espèces de Manchots (Statique)
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Version statique des pages d'espèces. Ces pages sont générées au moment
+        du build pour de meilleures performances.
+      </p>
+      <div class="mt-6 flex justify-center gap-3">
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-purple-800"
+        >
+          {penguins.length} manchots au total
+        </span>
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800"
+        >
+          Pages statiques
+        </span>
+      </div>
+    </section>
+    <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        speciesWithCounts.map((species) => (
+          <a
+            href={`/rendus-statique/${species.name}`}
+            class="group block p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:border-purple-300 hover:-translate-y-1"
+          >
+            <div class="text-center">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
+                📄
+              </div>
+
+              <h2 class="text-xl font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">
+                {species.name}
+              </h2>
+
+              <p class="text-gray-600 text-sm mb-3">
+                Manchot{" "}
+                {species.name === "Adelie"
+                  ? "Adélie"
+                  : species.name === "Gentoo"
+                    ? "Papou"
+                    : "à jugulaire"}
+              </p>
+
+              <div class="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                <span class="w-2 h-2 bg-purple-500 rounded-full mr-2" />
+                {species.count} individus
+              </div>
+
+              <div class="mt-4 text-purple-600 text-sm font-medium group-hover:text-purple-700">
+                Voir les détails →
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </section>
+  </main>
+</Layout>

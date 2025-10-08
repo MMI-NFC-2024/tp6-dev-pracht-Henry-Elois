@@ -3,24 +3,59 @@ import "../styles/global.css";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro Basics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/global.css" />
+    <title>Mon projet Penguins</title>
   </head>
-  <body>
-    <slot />
+  <body class="bg-gray-100">
+    <nav class="bg-gray-800 p-4 flex justify-between items-center">
+      <ul class="flex space-x-6">
+        <li>
+          <a
+            href="/"
+            class="text-white font-semibold hover:text-yellow-400 transition-colors"
+          >
+            Accueil
+          </a>
+        </li>
+        <li>
+          <a
+            href="/rendus-dynamique"
+            class="text-white font-semibold hover:text-yellow-400 transition-colors"
+          >
+            rendu dynamique
+          </a>
+        </li>
+        <li>
+          <a
+            href="/slidepenguins"
+            class="text-white font-semibold hover:text-yellow-400 transition-colors"
+          >
+            Slider
+          </a>
+        </li>
+        <li>
+          <a
+            href="/rendus-statique"
+            class="text-white font-semibold hover:text-yellow-400 transition-colors"
+          >
+            Rendus statique
+          </a>
+        </li>
+      </ul>
+      
+    </nav>
+    <script>
+      document.querySelector("#species")?.addEventListener("change", (evt) => {
+        const value = (evt.target as HTMLSelectElement).value;
+        location.pathname = "/species/" + value;
+      });
+    </script>
+    <main class="p-6">
+      <slot />
+    </main>
   </body>
 </html>
-
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>

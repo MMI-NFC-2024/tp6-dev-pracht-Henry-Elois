@@ -1,0 +1,67 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+import PlotFigure from "../../components/PlotFigure.astro";
+
+
+const safePenguins = Array.isArray(penguins) ? penguins : [];
+
+const species = [...new Set(safePenguins.map((c) => c.species))].sort();
+const speciesWithCounts = species.map((s) => ({
+  name: s,
+  count: safePenguins.filter((p) => p.species === s).length,
+}));
+---
+
+<Layout>
+  <main class="max-w-4xl mx-auto py-12 px-6">
+    <section class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">Espèces de Manchots</h1>
+      <div class="mt-6 text-sm text-gray-500">
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-blue-800"
+        >
+          {safePenguins.length} manchots au total
+        </span>
+      </div>
+    </section>
+    <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        speciesWithCounts.map((species) => (
+          <a
+            href={`/rendus-dynamique/${species.name}`}
+            class="group block p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:border-orange-300 hover:-translate-y-1"
+          >
+            <div class="text-center">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
+                🐧
+              </div>
+
+              <h2 class="text-xl font-semibold text-gray-800 mb-2 group-hover:text-orange-600 transition-colors">
+                {species.name}
+              </h2>
+
+              <p class="text-gray-600 text-sm mb-3">
+                Manchot{" "}
+                {species.name === "Adelie"
+                  ? "Adélie"
+                  : species.name === "Gentoo"
+                    ? "Papou"
+                    : "à jugulaire"}
+              </p>
+
+              <div class="inline-flex items-center px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                <span class="w-2 h-2 bg-orange-500 rounded-full mr-2" />
+                {species.count} individus
+              </div>
+
+              <div class="mt-4 text-blue-600 text-sm font-medium group-hover:text-blue-700">
+                Voir les détails →
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </section>
+  </main>
+</Layout>
